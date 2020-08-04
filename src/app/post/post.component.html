@@ -1,0 +1,184 @@
+<div id="wrapper" class="ng-scope">
+    <div class="gray-bg">
+        <div class="wrapper wrapper-content">
+            <div ng-app="ngclickApp">
+                <div ng-controller="ngclickCtrl">
+                    <div class="row">
+                        <div class="col-lg-12" ng-init="getPosts();">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-content mar-all">
+                                    <button class="btn btn-success float-right mar-button" type="submit" ng-click="addPostModelOpen();">Add New</button>
+                                    <button class="btn btn-danger float-right mar-button" type="submit" ng-click="logout();">Logout</button>
+									<h1 class="header">List of Posts</h1>
+
+                                    <div class="row mar-all" id="post">
+                                		<table id="PostTable" class="table table-striped table-bordered table-sm mar-all" cellspacing="0" width="100%" border="1">
+											<thead>
+												<tr>
+													<th class="th-sm">Name</th>
+													<th class="th-sm">Description</th>
+													<th class="th-sm">Category</th>
+													<th class="th-sm">Status</th>
+													<th class="th-sm">Action</th>
+												</tr>
+											</thead>
+											<tbody id="postData">
+											</tbody>
+										</table>
+                                    </div>
+
+					                <div id="addPostModal" class="modal" tabindex="-1" role="dialog">
+								        <div class="modal-dialog" role="document">
+								            <div class="modal-content">
+								                <div class="modal-header">
+								                    <h5 class="modal-title">Add Post</h5>
+								                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								                        <span aria-hidden="true">&times;</span>
+								                    </button>
+								                </div>
+								                <div class="modal-body">
+													<form id="createPost" name="createPost">
+														<div class="form-group" [formGroup]="addForm">
+															<label for="add_name">Name</label>
+															<input class="form-control" formControlName="name" id="add_name">
+															<span class="error" id="nameError"></span>
+														</div>
+
+														<div class="form-group" [formGroup]="addForm">
+															<label for="add_description">Description</label>
+															<input class="form-control" formControlName="description" id="add_description">
+															<span class="error" id="descriptionError"></span>
+														</div>
+
+														<div class="form-group" [formGroup]="addForm">
+															<label for="add_category">Category</label>
+															<select  class="form-control" formControlName="category" id="add_category">
+																<option value="">--Select--</option>
+																<option value="Category1">Category1</option>
+																<option value="Category2">Category2</option>
+																<option value="Category3">Category3</option>
+																<option value="Category4">Category4</option>
+																<option value="Category5">Category5</option>
+															</select>
+															<span class="error" id="categoryError"></span>
+														</div>
+
+														<div class="form-group" [formGroup]="addForm">
+															<label for="add_status">Status</label>
+															<select  class="form-control" formControlName="status" id="add_status">
+																<option value="">--Select--</option>
+																<option value="draft">draft</option>
+																<option value="published">published</option>
+															</select>
+															<span class="error" id="statusError"></span>
+														</div>
+
+														<button type="submit" class="btn btn-primary float-right" ng-click="addPostModelClose();">Submit</button>
+														<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-default float-right mar-right" ng-click="addPostModelClose();">Close</button>
+													</form>
+								                </div>
+								            </div>
+								        </div>
+								    </div>
+
+						            <div id="editPostModal" class="modal" tabindex="-1" role="dialog">
+								        <div class="modal-dialog" role="document">
+								            <div class="modal-content">
+								                <div class="modal-header">
+								                    <h5 class="modal-title">Edit Post</h5>
+								                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								                        <span aria-hidden="true">&times;</span>
+								                    </button>
+								                </div>
+								                <div class="modal-body">
+													<form id="editForm">
+														<div class="form-group" [formGroup]="updateForm">
+															<label for="exampleInputPassword1">id</label>
+															<input class="form-control" formControlName="id" id="id" disabled>
+														</div>
+
+														<div class="form-group" [formGroup]="updateForm">
+															<label for="name">Name</label>
+															<input class="form-control" formControlName="name" id="name">
+															<span class="error" id="editNameError"></span>
+														</div>
+
+														<div class="form-group" [formGroup]="updateForm">
+															<label for="description">Description</label>
+															<input class="form-control" formControlName="description" id="description">
+															<span class="error" id="editDescriptionError"></span>
+														</div>
+
+														<div class="form-group" [formGroup]="updateForm">
+															<label for="category">Category</label>
+															<select class="form-control" formControlName="category" id="category">
+																<option value="">--Select--</option>
+																<option value="Category1">Category1</option>
+																<option value="Category2">Category2</option>
+																<option value="Category3">Category3</option>
+																<option value="Category4">Category4</option>
+																<option value="Category5">Category5</option>
+															</select>
+															<span class="error" id="editCategoryError"></span>
+														</div>
+
+														<div class="form-group" [formGroup]="updateForm">
+															<label for="status">Status</label>
+															<select  class="form-control" formControlName="status" id="status">
+																<option value="">--Select--</option>
+																<option value="draft">draft</option>
+																<option value="published">published</option>
+															</select>
+															<span class="error" id="editStatusError"></span>
+														</div>
+
+														<button type="submit" class="btn btn-primary float-right" ng-click="editPost();">Submit</button>
+														<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-default float-right mar-right" ng-click="editPostModelClose();">Close</button>
+													</form>
+								                </div>
+								            </div>
+								        </div>
+								    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+			    <div id="getPostModal" class="modal" tabindex="-1" role="dialog">
+			        <div class="modal-dialog" role="document">
+			            <div class="modal-content">
+			                <div class="modal-header">
+			                    <h5 class="modal-title">Post Details</h5>
+			                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			                        <span aria-hidden="true">&times;</span>
+			                    </button>
+			                </div>
+			                <div class="modal-body">
+			                	<div class="form-group">
+			                		<b><label for="name">Name: </label></b>
+									<span id="get_name"></span>
+								</div>
+
+								<div class="form-group">
+									<b><label for="description">Description: </label></b>
+									<span id="get_description"></span>
+								</div>
+
+								<div class="form-group">
+									<b><label for="category">Category: </label></b>
+									<span id="get_category"></span>
+								</div>
+
+								<div class="form-group">
+									<b><label for="status">Status: </label></b>
+									<span id="get_status"></span>
+								</div>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+            </div>
+        </div>
+    </div>
+</div>

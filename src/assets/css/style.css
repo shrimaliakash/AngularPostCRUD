@@ -1,0 +1,34 @@
+.mar-all {
+	margin: 10px;
+}
+
+.mar-50 {
+	margin: 50px !important;
+}
+
+.mar-right {
+	margin-right: 10px;
+}
+
+.mar-button {
+	margin-right: 30px;
+}
+
+.mar-bottom {
+	margin-bottom: 10px;
+}
+
+.header {
+	text-align: center;
+}
+
+.error {
+	color: red;
+}
+
+table.dataTable {
+	clear: none !important;
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 0;
+}

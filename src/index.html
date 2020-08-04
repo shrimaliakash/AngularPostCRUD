@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Post</title>
+	<base href="/">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<link rel="stylesheet" href="assets/css/style.css">
+	<!-- JQuery and Bootstrap CSS and Javascript -->
+	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+	<!-- angualrjs Javascript -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+
+	<!-- dataTables css and Javascript -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+	<script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+
+	
+</head>
+<body>
+  <app-root></app-root>
+  <script type="text/javascript">
+		var app = angular.module('ngclickApp', []);
+		app.controller('ngclickCtrl', function ($scope, $http, $compile, $filter, $location, $window, $interval) {
+
+			$scope.posts = [];
+			$scope.selected = 0;
+			$scope.url = "http://localhost:3001/";
+			$scope.baseURL = "http://localhost:4200/post";
+			$scope.loginURL = "http://localhost:4200/login";
+
+			$scope.getPosts = function (){
+				var url = $scope.url+"post";
+				$http.get(url).then(function(response){
+					var new_posts = response.data.data;
+					angular.forEach(new_posts, function (value, key) {
+						$scope.posts.push({"id": value.id, "name": value.name, "description": value.description, "category": value.category, "status": value.status});
+					});
+					angular.forEach($scope.posts, function (value) {
+						if(value != undefined || value != '') {
+							var Post_Data_HTML = '<tr>'
+							Post_Data_HTML += '<td>'+value.name+'</td>'
+							Post_Data_HTML += '<td>'+value.description+'</td>'
+							Post_Data_HTML += '<td>'+value.category+'</td>'
+							Post_Data_HTML += '<td>'+value.status+'</td>'
+							Post_Data_HTML += '<td><button types="button" class="btn btn-info mar-all" ng-click="getpostDetails(\''+value.id+'\');">View</button> <button types="button" class="btn btn-primary mar-all" ng-click="UpdatepostDetails(\''+value.id+'\');">Edit</button> <button type="button" class="btn btn-danger mar-all" data-id="'+value.id+'" ng-click="DeletepostDetails(\''+value.id+'\');">Delete</button></td>';
+							Post_Data_HTML += '</tr>';
+							var $postData = $(Post_Data_HTML).appendTo('#postData');
+							$compile($postData)($scope);
+						}
+					});
+					$('#PostTable').DataTable({
+				        pageLength: 10,
+				        paging: true,
+				        searching: true
+				    });
+				    $("#PostTable_wrapper").css({'margin': '40px'})
+  					$('.dataTables_length').addClass('bs-select');
+				});
+			}
+
+			$scope.getpostDetails = function (id){
+				$("#getPostModal").modal("show");
+				var url = $scope.url+"post/"+id;
+				$http.get(url).then(function(response){
+					var post_details = response.data.data;
+					if(post_details != undefined || post_details != '') {
+						$("#get_name").html(post_details.name);
+						$("#get_description").html(post_details.description);
+						$("#get_category").html(post_details.category);
+						$("#get_status").html(post_details.status);
+					}
+				});
+			}
+
+			$scope.UpdatepostDetails = function (id){
+				$("#editPostModal").modal("show");
+				localStorage.setItem('id',id);
+				var url = $scope.url+"post/"+id;
+				$http.get(url).then(function(response){
+					var post_details = response.data.data;
+					if(post_details != undefined || post_details != '') {
+						$("#id").val(id);
+						$("#name").val(post_details.name);
+						$("#description").val(post_details.description);
+						$("#category").val(post_details.category);
+						$("#status").val(post_details.status);
+					}
+				});
+			}
+
+			$scope.DeletepostDetails = function (id){
+				var url = $scope.url+"post/"+id;
+				$http.delete(url).then(function(response){
+					var post_details = response.data.data;
+					if(post_details != undefined || post_details != '') {
+						$window.location.href = $scope.baseURL;
+					}
+				});
+			}
+
+			$scope.addPostModelOpen = function (){
+				$("#addPostModal").modal("show");
+			}
+
+			$scope.addPostModelClose = function (){
+				if($("#add_name").val() != '' && $("#add_description").val() != '' && $("#add_category").val() != '' && $("#add_status").val() != '') {
+					$("#addPostModal").modal("hide");
+					
+					var name = $("#add_name").val();
+					var description = $("#add_description").val();
+					var category = $("#add_category").val();
+					var status = $("#add_status").val();
+					var data = {
+						'name':name,
+						'description':description,
+						'category':category,
+						'status':status
+					};
+					var url = $scope.url+"post";
+					$http.post(url, data).then(function(response){
+						if(response.data.Inserted) {
+							var id = response.data.Inserted;
+							$window.location.href = $scope.baseURL;
+						}
+					});
+				} else {
+					if($("#add_name").val() == '') {
+						$("#nameError").html('Please Enter Name');
+					} else if($("#add_description").val() == '') {
+						$("#nameError").html('');
+						$("#descriptionError").html('Please Enter Description');
+					} else if($("#add_category").val() == '') {
+						$("#descriptionError").html('');
+						$("#categoryError").html('Please Enter Category');
+					} else if($("#add_status").val() == '') {
+						$("#categoryError").html('');
+						$("#statusError").html('Please Enter Status');
+					} else {
+						$("#statusError").html('');
+					}
+				}
+			}
+
+      		$scope.editpostModelOpen = function (){
+				$("#editPostModal").modal("show");
+			}
+
+			$scope.editPost = function (){
+				if($("#name").val() != '' && $("#description").val() != '' && $("#category").val() != '' && $("#status").val() != '') {
+					var name = $("#name").val();
+					var description = $("#description").val();
+					var category = $("#category").val();
+					var status = $("#status").val();
+					var id = $("#id").val();
+					var data = {
+						'name':name,
+						'description':description,
+						'category':category,
+						'status':status
+					};
+					var url = $scope.url+"post/"+id;
+					$http.post(url, data).then(function(response){
+						$window.location.href = $scope.baseURL;
+					});
+					$("#editPostModal").modal("hide");
+				} else {
+					if($("#name").val() == '') {
+						$("#editNameError").html('Please Enter Name');
+					} else if($("#description").val() == '') {
+						$("#editNameError").html('');
+						$("#editDescriptionError").html('Please Enter Description');
+					} else if($("#category").val() == '') {
+						$("#editDescriptionError").html('');
+						$("#editCategoryError").html('Please Enter Category');
+					} else if($("#status").val() == '') {
+						$("#editCategoryError").html('');
+						$("#editStatusError").html('Please Enter Status');
+					} else {
+						$("#editStatusError").html('');
+					}
+				}
+			}
+			
+			$scope.editpostModelClose = function (){
+				$("#editPostModal").modal("hide");
+			}
+
+			$scope.formSubmit = function() {
+				var url = $scope.url+"login";
+				var username = $("#username").val();
+				var password = $("#password").val();
+				var data = {
+					'username':username,
+					'password':password
+				};
+				if($("#username").val() == '') {
+					$("#userNameError").html('Please Enter Username');
+				} else if($("#password").val() == '') {
+					$("#userNameError").html('');
+					$("#passwordError").html('Please Enter Password');
+				} else {
+					$("#passwordError").html('');
+					$http.post(url, data).then(function(response){
+						if(response.data.success == true) {
+							$window.location.href = $scope.baseURL;
+						} else {
+							$("#loginError").html('Incorrect Username or Password');
+						}
+					});
+				}
+			}
+
+			$scope.logout = function() {
+				$window.location.href = $scope.loginURL;
+			}
+		});
+	</script>
+</body>
+</html>
